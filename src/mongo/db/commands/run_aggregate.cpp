@@ -67,6 +67,7 @@
 #include "mongo/util/log.h"
 #include "mongo/util/scopeguard.h"
 #include "mongo/util/string_map.h"
+#include "uprobes.h"
 
 namespace mongo {
 
@@ -319,7 +320,7 @@ std::unique_ptr<CollatorInterface> resolveCollator(OperationContext* opCtx,
         return uassertStatusOK(CollatorFactoryInterface::get(opCtx->getServiceContext())
                                    ->makeFromBSON(request.getCollation()));
     }
-
+    
     return (collection && collection->getDefaultCollator()
                 ? collection->getDefaultCollator()->clone()
                 : nullptr);
@@ -327,6 +328,17 @@ std::unique_ptr<CollatorInterface> resolveCollator(OperationContext* opCtx,
 }  // namespace
 
 Status runAggregate(OperationContext* opCtx,
+                    const NamespaceString& origNss,
+                    const AggregationRequest& request,
+                    const BSONObj& cmdObj,
+                    BSONObjBuilder& result) {
+    MONGO_AGGREGATE_BEGIN();
+    Status status = _runAggregate(opCtx, origNss, request, cmdObj, result);
+    MONGO_AGGREGATE_END();
+    return status;
+}
+
+Status _runAggregate(OperationContext* opCtx,
                     const NamespaceString& origNss,
                     const AggregationRequest& request,
                     const BSONObj& cmdObj,

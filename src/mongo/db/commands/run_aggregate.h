@@ -50,4 +50,10 @@ Status runAggregate(OperationContext* opCtx,
                     const BSONObj& cmdObj,
                     BSONObjBuilder& result);
 
+Status _runAggregate(OperationContext* opCtx,
+                    const NamespaceString& nss,
+                    const AggregationRequest& request,
+                    const BSONObj& cmdObj,
+                    BSONObjBuilder& result);                    
+
 }  // namespace mongo
