@@ -148,6 +148,7 @@ env.Library(
 env.Library(
     target="dcommands",
     source=[
+        "uprobes.o",
         "apply_ops_cmd.cpp",
         "clone.cpp",
         "clone_collection.cpp",

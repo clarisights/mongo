@@ -37,6 +37,7 @@
 #include "mongo/db/commands/run_aggregate.h"
 #include "mongo/db/pipeline/document.h"
 #include "mongo/db/stats/fill_locker_info.h"
+#include "uprobes.h"
 
 namespace mongo {
 
@@ -69,8 +70,11 @@ public:
 
         BSONObjBuilder responseBuilder;
 
+        MONGO_AGGREGATE_BEGIN();
+        // TODO: Add requestId/context to tracepoint
         auto status = runAggregate(
             opCtx, request.getNamespaceString(), request, std::move(aggCmdObj), responseBuilder);
+        MONGO_AGGREGATE_END();
 
         if (!status.isOK()) {
             return status;
